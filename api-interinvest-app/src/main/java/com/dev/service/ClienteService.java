@@ -18,4 +18,8 @@ public class ClienteService {
 		return clienteRepository.findAll();
 	}
 
+	public Cliente cadastrar(Cliente cliente) {
+		return clienteRepository.save(cliente);
+	}
+
 }
