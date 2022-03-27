@@ -33,10 +33,6 @@ public class InvestimentoService {
 	private ClienteRepository clienteRepository;
 	
 	public List<Investimento> buscarTodos(){
-		String cpfCliente = "72368098291";
-		Cliente cliente = new Cliente();
-		cliente = clienteRepository.findClienteByCpf(cpfCliente);
-		System.err.println(cliente.getCpf());
 		return investimentoRepository.findAll();
 	}
 	
