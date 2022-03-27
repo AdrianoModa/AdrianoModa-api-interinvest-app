@@ -12,12 +12,14 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter @Setter
 @Table(name = "cliente")
-@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Cliente implements Serializable {
 
 	private static final long serialVersionUID = 1L;

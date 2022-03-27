@@ -6,5 +6,7 @@ import com.dev.domain.Cliente;
 
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
+	
+	Cliente findClienteByCpf(String cpf);
 
 }

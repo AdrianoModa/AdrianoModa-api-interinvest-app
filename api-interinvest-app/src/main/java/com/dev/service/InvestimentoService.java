@@ -13,7 +13,10 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dev.domain.Cliente;
 import com.dev.domain.Investimento;
+import com.dev.domain.Papel;
+import com.dev.repository.ClienteRepository;
 import com.dev.repository.InvestimentoRepository;
 import com.dev.repository.PapelRepository;
 
@@ -26,11 +29,21 @@ public class InvestimentoService {
 	@Autowired
 	private PapelRepository papelRepository;
 	
+	@Autowired
+	private ClienteRepository clienteRepository;
+	
 	public List<Investimento> buscarTodos(){
+		String cpfCliente = "72368098291";
+		Cliente cliente = new Cliente();
+		cliente = clienteRepository.findClienteByCpf(cpfCliente);
+		System.err.println(cliente.getCpf());
 		return investimentoRepository.findAll();
 	}
 	
 	public Stream<List<Double>> investir(Double valorAInvestir, String cpfCliente, int quantidadeEmpresaAInvestir) {
+		
+		Cliente cliente = new Cliente();
+		cliente = clienteRepository.findClienteByCpf(cpfCliente);
 		
 //		List<Double> papeis = papelRepository.findAll().stream().filter(f -> f.getStatus().equals("ATIVA")).map(m -> m.getPreco()).collect(Collectors.toList());
 		List<Double> papeis = Arrays.asList(28.45, 22.58, 42.11, 15.19, 38.15);

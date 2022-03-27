@@ -1,7 +1,6 @@
 package com.dev.domain;
 
 import java.io.Serializable;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -11,16 +10,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter @Setter
 @Table(name = "papel")
-@Data
-public class Papel implements Serializable {	
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Papel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
