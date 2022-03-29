@@ -32,16 +32,22 @@ public class Investimento implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long investimentoId;
 	private Double valorAInvestir;
-	private Integer quantidadeDePapeis;
-	private Double valorTotalPorPapel;
+	private Integer quantidadeDePapeis;	
 	private Double valorTotalCompra;
 	private Double troco;
 	
 	@ManyToMany(cascade = CascadeType.ALL)
 	  @JoinTable(name="investimento_papel",
-      joinColumns={@JoinColumn(name="investimento_id")},
-      inverseJoinColumns={@JoinColumn(name="papel_id")})	
+	  joinColumns={@JoinColumn(name="investimento_id")},
+	  inverseJoinColumns={@JoinColumn(name="papel_id")})	
 	@JsonIgnoreProperties(value = "investimentos")
 	private List<Papel> papeisComprados;
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+	  @JoinTable(name="investimento_total_papel",
+	    joinColumns={@JoinColumn(name="investimento_id")},
+	    inverseJoinColumns={@JoinColumn(name="papel_total_id")})	
+	@JsonIgnoreProperties(value = "totalPapeis")
+	private List<PapelTotal> valorTotaisPorPapeis;
 
 }
