@@ -43,6 +43,9 @@ public class Papel implements Serializable {
 	private Cliente cliente;
 	
 	@ManyToMany(mappedBy="papeisComprados", cascade = CascadeType.ALL)
+	@JsonIgnoreProperties(value = "investimentos")
 	private List<Investimento> investimentos;
+	
+	
 	
 }
