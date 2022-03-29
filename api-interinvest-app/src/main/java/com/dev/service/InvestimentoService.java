@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.dev.domain.Cliente;
 import com.dev.domain.Investimento;
 import com.dev.domain.Papel;
+import com.dev.domain.PapelTotal;
 import com.dev.domain.Status;
 import com.dev.repository.ClienteRepository;
 import com.dev.repository.InvestimentoRepository;
@@ -25,7 +26,7 @@ public class InvestimentoService {
 	private InvestimentoRepository investimentoRepository;
 	
 	@Autowired
-	private ClienteRepository clienteRepository;
+	private ClienteRepository clienteRepository;	
 	
 	public List<Investimento> buscarTodos(){
 		return investimentoRepository.findAll();
@@ -53,7 +54,7 @@ public class InvestimentoService {
 				i = 0;
 			}
 			
-			if (papelListLimit.size() < quantidadeEmpresaAInvestir) {				
+			if (papelListLimit.size() < quantidadeEmpresaAInvestir) {			
 				if (papeis.get(i).getPreco() <= valorAInvestir) {		
 					papelList.add(papeis.get(i));
 					papelListLimit.add(papeis.get(i));
@@ -68,22 +69,39 @@ public class InvestimentoService {
 			}
 		}
 		
-		Stream<List<Papel>> combinacao = Stream.of(papelList);
 		Optional<Double> valorTotalCompra = papelList.parallelStream()
 				.map(m -> m.getPreco()).reduce((a, b) -> Double.sum(a, b));
+		
+		Map<String, Double> totalPorPapel = totalPorPapelAdquirido(papelList);
+		
+		List<PapelTotal> totalPorPapelLista = new ArrayList<PapelTotal>();		
+		
+		totalPorPapel.forEach((key, value) -> {
+			List<String> nome = papelList.stream()
+					.filter(f -> f.getTicker().equals(key))
+					.map(Papel::getNome)
+					.collect(Collectors.toList());
+			totalPorPapelLista.add(new PapelTotal(nome.get(0), key, value));
+		});
 		
 		Double troco = (valorInvestido - valorTotalCompra.get());
 		
 		Investimento investir = new Investimento();
 		
-		investir.setQuantidadeDePapeis(Math.toIntExact(combinacao.count()));
+		investir.setQuantidadeDePapeis(papelList.size());
 		investir.setValorTotalCompra(valorTotalCompra.get());
 		investir.setValorAInvestir(valorInvestido);
 		investir.setTroco(troco);
 		investir.setPapeisComprados(papelList);
-		investimentoRepository.save(investir);
+		investir.setValorTotaisPorPapeis(totalPorPapelLista);
 		
-		return investir;
+		return investimentoRepository.save(investir);
+	}
+
+	private Map<String, Double> totalPorPapelAdquirido(List<Papel> papelList) {
+		Map<String, Double> totalPorPapel = papelList.stream()
+			.collect(Collectors.groupingBy(Papel::getTicker, Collectors.summingDouble(Papel::getPreco)));
+		return totalPorPapel;
 	}
 
 }
