@@ -1,12 +1,10 @@
 package com.dev.service;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,9 +14,9 @@ import org.springframework.stereotype.Service;
 import com.dev.domain.Cliente;
 import com.dev.domain.Investimento;
 import com.dev.domain.Papel;
+import com.dev.domain.Status;
 import com.dev.repository.ClienteRepository;
 import com.dev.repository.InvestimentoRepository;
-import com.dev.repository.PapelRepository;
 
 @Service
 public class InvestimentoService {
@@ -27,55 +25,65 @@ public class InvestimentoService {
 	private InvestimentoRepository investimentoRepository;
 	
 	@Autowired
-	private PapelRepository papelRepository;
-	
-	@Autowired
 	private ClienteRepository clienteRepository;
 	
 	public List<Investimento> buscarTodos(){
 		return investimentoRepository.findAll();
 	}
 	
-	public Stream<List<Double>> investir(Double valorAInvestir, String cpfCliente, int quantidadeEmpresaAInvestir) {
+	public Investimento investir(Double valorAInvestir, String cpfCliente, int quantidadeEmpresaAInvestir) {
 		
-		Cliente cliente = new Cliente();
-		cliente = clienteRepository.findClienteByCpf(cpfCliente);
+		Cliente cliente = clienteRepository.findDistinctClienteByCpf(cpfCliente);
 		
-//		List<Double> papeis = papelRepository.findAll().stream().filter(f -> f.getStatus().equals("ATIVA")).map(m -> m.getPreco()).collect(Collectors.toList());
-		List<Double> papeis = Arrays.asList(28.45, 22.58, 42.11, 15.19, 38.15);
+		List<Papel> papeis = cliente.getPapeis()
+				.stream().filter(f -> f.getStatus().equals(Status.ATIVA))
+				.collect(Collectors.toList());
 		
-		double minimo = papeis.stream().mapToDouble(v -> v).min().getAsDouble();
-		List<Double> papelList = new ArrayList<Double>();
-		Set<Double> papelListLimit = new HashSet<Double>();
-
+		Comparator<Papel> comparator = Comparator.comparing(Papel::getPreco);
+		Double valorInvestido = valorAInvestir;
+		
+		Papel minimo = papeis.stream().min(comparator).get();
+		List<Papel> papelList = new ArrayList<Papel>();
+		List<Papel> papelListLimit = new ArrayList<Papel>();
+		
 		Collections.shuffle(papeis);
 		
-		for (int i = 0; valorAInvestir >= minimo; i++) {
+		for (int i = 0; valorAInvestir >= minimo.getPreco(); i++) {
 			if (i == papeis.size()) {
 				i = 0;
 			}
 			
 			if (papelListLimit.size() < quantidadeEmpresaAInvestir) {				
-				if (papeis.get(i) <= valorAInvestir) {		
+				if (papeis.get(i).getPreco() <= valorAInvestir) {		
 					papelList.add(papeis.get(i));
 					papelListLimit.add(papeis.get(i));
-					valorAInvestir = valorAInvestir - papeis.get(i);				
+					valorAInvestir = valorAInvestir - papeis.get(i).getPreco();		
 				}
 			}else {
-				papeis = new ArrayList<Double>();
+				papeis = new ArrayList<Papel>();
 				papeis.addAll(papelListLimit);
 				papelListLimit.clear();
-				minimo = papeis.stream().mapToDouble(v -> v).min().getAsDouble();
+				minimo = papeis.stream().min(Comparator.comparing(Papel::getPreco)).get();
 				i = 0;
 			}
 		}
 		
-		DecimalFormat df = new DecimalFormat("###.##");
-		Stream<List<Double>> combinacao = Stream.of(papelList);
-		Double totalAdquirido = papelList.stream().reduce((a, b) -> a + b).get();
-		System.out.println(df.format(totalAdquirido));
+		Stream<List<Papel>> combinacao = Stream.of(papelList);
+		Optional<Double> valorTotalCompra = papelList.parallelStream()
+				.map(m -> m.getPreco()).reduce((a, b) -> Double.sum(a, b));
 		
-		return combinacao;		
+		Double troco = (valorInvestido - valorTotalCompra.get());
+		
+		Investimento investir = new Investimento();
+		
+		investir.setQuantidadeDePapeis(Math.toIntExact(combinacao.count()));
+		investir.setValorTotalCompra(valorTotalCompra.get());
+		investir.setValorAInvestir(valorInvestido);
+		investir.setTroco(troco);
+		investir.setPapeisComprados(papelList);
+		investimentoRepository.save(investir);
+		
+		return investir;
 	}
 
 }

@@ -1,6 +1,9 @@
 package com.dev.domain;
 
 import java.io.Serializable;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -8,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,7 +23,7 @@ import lombok.Setter;
 @Getter @Setter
 @Table(name = "papel")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Papel implements Serializable {
+public class Papel implements Serializable {	
 
 	private static final long serialVersionUID = 1L;
 	
@@ -31,11 +35,14 @@ public class Papel implements Serializable {
 	private String ticker;
 	private Double preco;
 	@Enumerated(EnumType.STRING)
-	private Status status;	
+	private Status status;
 	
 	@ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
 	@JsonIgnoreProperties(value = "papeis")
 	private Cliente cliente;
+	
+	@ManyToMany(mappedBy="papeisComprados", cascade = CascadeType.ALL)
+	private List<Investimento> investimentos;
 	
 }
