@@ -16,7 +16,7 @@ import com.dev.domain.Investimento;
 import com.dev.service.InvestimentoService;
 
 @RestController
-@RequestMapping("/investimento")
+@RequestMapping("/investimentos")
 @CrossOrigin
 public class InvestimentoController {
 	

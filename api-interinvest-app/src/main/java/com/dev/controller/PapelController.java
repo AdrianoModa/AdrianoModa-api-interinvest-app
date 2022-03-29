@@ -23,7 +23,7 @@ import com.dev.domain.Status;
 import com.dev.service.PapelService;
 
 @RestController
-@RequestMapping("/papel")
+@RequestMapping("/papeis")
 @CrossOrigin
 public class PapelController {
 	
