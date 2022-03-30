@@ -17,7 +17,7 @@ import com.dev.domain.Cliente;
 import com.dev.service.ClienteService;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/cliente")
 @CrossOrigin
 public class ClienteController {
 	

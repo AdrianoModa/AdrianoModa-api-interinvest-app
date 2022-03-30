@@ -23,7 +23,7 @@ import com.dev.domain.Status;
 import com.dev.service.PapelService;
 
 @RestController
-@RequestMapping("/papeis")
+@RequestMapping("/papel")
 @CrossOrigin
 public class PapelController {
 	
@@ -36,8 +36,11 @@ public class PapelController {
 	}
 	
 	@GetMapping("/{status}")
-	public List<Papel> listarPorStatus(@PathVariable Status status){
-		return papelService.buscarPorStatus(status);
+	public ResponseEntity<List<Papel>> listarPorStatus(@PathVariable Status status){
+		if (!status.equals(Status.ATIVA) || !status.equals(Status.INATIVA)) {
+			return new ResponseEntity<List<Papel>>(HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<List<Papel>>(papelService.buscarPorStatus(status), HttpStatus.OK);		
 	}
 	
 	@PostMapping
