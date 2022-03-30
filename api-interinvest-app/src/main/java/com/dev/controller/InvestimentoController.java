@@ -3,6 +3,7 @@ package com.dev.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,6 +26,7 @@ public class InvestimentoController {
 	private InvestimentoService investimentoService;
 	
 	@GetMapping
+	@Cacheable(value = "investimento")
 	public ResponseEntity<List<Investimento>> listarTodos(){
 		return new ResponseEntity<List<Investimento>>(investimentoService.buscarTodos(), HttpStatus.OK);
 	}

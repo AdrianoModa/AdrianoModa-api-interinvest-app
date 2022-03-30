@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,6 +32,7 @@ public class PapelController {
 	private PapelService papelService;
 	
 	@GetMapping
+	@Cacheable(value = "papel")
 	public ResponseEntity<List<Papel>> listarTodos(){
 		return new ResponseEntity<List<Papel>>(papelService.buscarTodos(), HttpStatus.OK);
 	}
