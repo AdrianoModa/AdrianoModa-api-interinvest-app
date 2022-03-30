@@ -31,15 +31,12 @@ public class PapelController {
 	private PapelService papelService;
 	
 	@GetMapping
-	public List<Papel> listarTodos(){
-		return papelService.buscarTodos();
+	public ResponseEntity<List<Papel>> listarTodos(){
+		return new ResponseEntity<List<Papel>>(papelService.buscarTodos(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{status}")
 	public ResponseEntity<List<Papel>> listarPorStatus(@PathVariable Status status){
-		if (!Status.ATIVA.name().equals("ATIVA") || !Status.ATIVA.name().equals("INATIVA")) {
-			return new ResponseEntity<List<Papel>>(HttpStatus.BAD_REQUEST);
-		}
 		return new ResponseEntity<List<Papel>>(papelService.buscarPorStatus(status), HttpStatus.OK);		
 	}
 	

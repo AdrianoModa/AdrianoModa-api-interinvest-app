@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.dev.domain.Investimento;
 import com.dev.service.InvestimentoService;
@@ -29,10 +30,15 @@ public class InvestimentoController {
 	}
 	
 	@PostMapping("/{valorAInvestir}/{cpfCliente}/{quantidadeEmpresaAInvestir}")
-	public ResponseEntity<Investimento> investimento(
+	public ResponseEntity<Investimento> adquirirPapel(
 			@PathVariable Double valorAInvestir,
 			@PathVariable String cpfCliente,
 			@PathVariable int quantidadeEmpresaAInvestir){
+		
+		if (cpfCliente.length() != 11) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		}
+		
 		return 
 				new ResponseEntity<Investimento>(investimentoService
 						.investir(valorAInvestir, cpfCliente, quantidadeEmpresaAInvestir), HttpStatus.OK);

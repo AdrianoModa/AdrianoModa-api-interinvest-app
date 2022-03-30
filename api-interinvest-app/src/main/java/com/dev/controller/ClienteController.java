@@ -25,8 +25,8 @@ public class ClienteController {
 	private ClienteService clienteService;
 	
 	@GetMapping
-	public List<Cliente> listarTodos(){
-		return clienteService.buscarTodos();
+	public ResponseEntity<List<Cliente>> listarTodos(){
+		return new ResponseEntity<List<Cliente>>(clienteService.buscarTodos(), HttpStatus.OK);
 	}
 	
 	@PostMapping
