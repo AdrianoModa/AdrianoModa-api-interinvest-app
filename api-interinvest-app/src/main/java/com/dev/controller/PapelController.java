@@ -37,7 +37,7 @@ public class PapelController {
 	
 	@GetMapping("/{status}")
 	public ResponseEntity<List<Papel>> listarPorStatus(@PathVariable Status status){
-		if (!status.equals(Status.ATIVA) || !status.equals(Status.INATIVA)) {
+		if (!Status.ATIVA.name().equals("ATIVA") || !Status.ATIVA.name().equals("INATIVA")) {
 			return new ResponseEntity<List<Papel>>(HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<List<Papel>>(papelService.buscarPorStatus(status), HttpStatus.OK);		
